@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Date Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWecr3N6v8jqepdL5fz4GfnNX5mCns5TdE6FuHUjQb2j5eHJ/UXvjgtBdRvL" crossorigin="anonymous">
+<style>
+    body {
+        background-color: #1A1A1D; /* Dark background */
+        color: #C5C6C7; /* Soft white text for readability */
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .card {
+        background: #4E4E50; /* Dark card background */
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 600px;
+    }
+    .card h2 {
+        text-align: center;
+        color: #66FCF1; /* Accent color */
+        margin-bottom: 20px;
+    }
+    .form-group {
+        margin-bottom: 10px;
+    }
+    .form-group label {
+        display: block;
+        color: #C5C6C7;
+        margin-bottom: 5px;
+    }
+    input[type=date], input[type=button] {
+        width: calc(50% - 10px);
+        padding: 10px;
+        margin: 5px 0;
+        border: none;
+        border-radius: 4px;
+        background: #2B2B2B;
+        color: #FFF;
+        font-size: 16px;
+    }
+    input[type=button] {
+        background: #45A29E; /* Button color */
+        color: #0B0C10; /* Button text color */
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    input[type=button]:hover {
+        background: #66FCF1;
+    }
+    .results-container {
+        margin-top: 20px;
+    }
+    .result, .alternative-units {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+    .result p, .alternative-units p {
+        margin: 0;
+    }
+    .alternative-units ul {
+        list-style-type: disc;
+        padding-left: 40px;
+        margin-top: 10px;
+    }
+    .alternative-units ul li {
+        margin-bottom: 5px;
+    }
+</style>
+<script>
+function calculateDuration() {
+    var startDate = new Date(document.getElementById("startDate").value);
+    var endDate = new Date(document.getElementById("endDate").value);
+
+    if (startDate >= endDate) {
+        document.getElementById("resultsContainer").innerHTML = "<p>End date must be after start date.</p>";
+        return;
+    }
+
+    var timeDiff = endDate - startDate;
+    var daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+    var resultsHTML = `
+        <div class="result">
+            <p><strong>From and including:</strong> ${startDate.toLocaleDateString("en-US", options)}</p>
+            <p><strong>To, but not including:</strong> ${endDate.toLocaleDateString("en-US", options)}</p>
+            <p><strong>Result:</strong> ${daysDiff} days</p>
+            <p>It is ${daysDiff} days from the start date to the end date, but not including the end date.</p>
+            <p>Or ${Math.floor(daysDiff / 30)} months excluding the end date.</p>
+        </div>
+    `;
+
+    var seconds = daysDiff * 86400;
+    var minutes = seconds / 60;
+    var hours = minutes / 60;
+    var weeks = daysDiff / 7;
+    var months = daysDiff / 30;
+    var percentOfYear = (daysDiff / (startDate.getFullYear() % 4 === 0 ? 366 : 365)) * 100;
+
+    resultsHTML += `
+        <div class="alternative-units">
+            <p><strong>Alternative time units:</strong></p>
+            <ul>
+                <li>${seconds.toLocaleString()} seconds</li>
+                <li>${minutes.toLocaleString()} minutes</li>
+                <li>${hours.toLocaleString()} hours</li>
+                <li>${daysDiff} days</li>
+                <li>${Math.floor(weeks)} weeks and ${daysDiff % 7} day${daysDiff % 7 === 1 ? '' : 's'}</li>
+                <li>${Math.floor(months)} month${Math.floor(months) !== 1 ? 's' : ''}</li>
+                <li>${percentOfYear.toFixed(2)}% of ${startDate.getFullYear()}</li>
+            </ul>
+        </div>
+    `;
+
+    document.getElementById("resultsContainer").innerHTML = resultsHTML;
+}
+</script>
+</head>
+<body>
+
+<div class="card">
+    <h2>Days Calculator</h2>
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+    </div>
+    <input type="button" value="Calculate Duration" onclick="calculateDuration()">
+
+    <div class="results-container" id="resultsContainer">
+        <!-- Results will be displayed here -->
+    </div>
+</div>
+
+</body>
+</html>
